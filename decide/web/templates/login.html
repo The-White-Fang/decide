@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - decide{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center">
+    <div class="max-w-md w-full bg-slate-800/90 border border-slate-700/60 rounded-xl p-8 shadow-2xl">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-white tracking-tight">Sign In to decide</h1>
+            <p class="text-sm text-slate-400 mt-1">Self-hosted GLiNER2.5 administrative console</p>
+        </div>
+
+        {% if error %}
+        <div class="mb-4 p-3 bg-red-900/40 border border-red-700/60 text-red-200 text-sm rounded-lg">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/admin/login" method="post" class="space-y-4">
+            <div>
+                <label for="username" class="block text-sm font-medium text-slate-300">Username</label>
+                <input type="text" id="username" name="username" required autofocus
+                       class="mt-1 block w-full px-3 py-2 bg-slate-900/80 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
+                <input type="password" id="password" name="password" required
+                       class="mt-1 block w-full px-3 py-2 bg-slate-900/80 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <button type="submit"
+                    class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow transition">
+                Sign In
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

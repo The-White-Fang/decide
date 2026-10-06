@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Interactive Model Playground - decide{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">Interactive Playground</h1>
+        <p class="text-sm text-slate-400">Test live single-pass multi-task classification against fastino/GLiNER2.5-Decide</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Input Form -->
+        <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-6 shadow space-y-4">
+            <form hx-post="/admin/playground/test" hx-target="#playground-result" hx-indicator="#loading-indicator" class="space-y-4">
+                <div>
+                    <label for="text" class="block text-sm font-medium text-slate-300">Input Text</label>
+                    <textarea id="text" name="text" rows="5" required
+                              class="mt-1 block w-full px-3 py-2 bg-slate-900/90 border border-slate-700 rounded-lg text-slate-100 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">{{ sample_text }}</textarea>
+                </div>
+
+                <div>
+                    <label for="tasks_json" class="block text-sm font-medium text-slate-300">Task Categories & Candidate Labels (JSON)</label>
+                    <textarea id="tasks_json" name="tasks_json" rows="8" required
+                              class="mt-1 block w-full px-3 py-2 bg-slate-900/90 border border-slate-700 rounded-lg text-slate-100 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">{{ sample_tasks }}</textarea>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button type="submit"
+                            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow transition flex items-center space-x-2">
+                        <span>⚡ Test Predict</span>
+                    </button>
+                    <div id="loading-indicator" class="htmx-indicator text-xs text-indigo-400 font-medium animate-pulse">
+                        Executing inference...
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Output Result Panel -->
+        <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-6 shadow flex flex-col">
+            <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Inference Output</h3>
+            <div id="playground-result" class="flex-1 flex items-center justify-center p-4 bg-slate-900/70 border border-slate-800 rounded-lg font-mono text-xs text-slate-400">
+                Submit a prediction request to view output JSON and latency telemetry.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

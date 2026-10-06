@@ -1,0 +1,37 @@
+<div id="key-created-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center space-x-2 text-emerald-400">
+            <span class="text-xl">✓</span>
+            <h3 class="text-lg font-bold text-white">API Key Successfully Issued</h3>
+        </div>
+
+        <div class="p-3 bg-amber-950/60 border border-amber-800 text-amber-200 text-xs rounded-lg">
+            <strong>CRITICAL:</strong> This secret key will <strong>NEVER</strong> be displayed again. Copy and store it in a secure location immediately.
+        </div>
+
+        <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Key Label: <strong class="text-slate-200">{{ api_key.name }}</strong></label>
+            <div class="flex items-center space-x-2">
+                <input type="text" id="raw-key-input" readonly value="{{ raw_key }}"
+                       class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg font-mono text-xs text-emerald-300 select-all focus:outline-none">
+                <button type="button" onclick="navigator.clipboard.writeText('{{ raw_key }}'); this.innerText='Copied!';"
+                        class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow transition">
+                    Copy Key
+                </button>
+            </div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+            <button type="button" onclick="document.getElementById('key-created-modal').remove()"
+                    class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg">
+                I Have Saved My Key
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Out of band swap to insert the new key row into the table -->
+<div id="keys-table-body" hx-swap-oob="afterbegin">
+    {% set key = api_key %}
+    {% include "partials/key_row.html" %}
+</div>

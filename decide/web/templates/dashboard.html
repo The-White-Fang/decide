@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}API Key Dashboard - decide{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">API Key Management</h1>
+            <p class="text-sm text-slate-400">Issue, audit, and revoke client API access keys</p>
+        </div>
+        <div>
+            <button onclick="document.getElementById('create-modal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg shadow transition">
+                + Create New API Key
+            </button>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-4 bg-slate-800/80 border border-slate-700/60 rounded-xl">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Keys</span>
+            <div class="text-2xl font-bold text-slate-100 mt-1">{{ keys|length }}</div>
+        </div>
+        <div class="p-4 bg-slate-800/80 border border-slate-700/60 rounded-xl">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Keys</span>
+            <div class="text-2xl font-bold text-emerald-400 mt-1">{{ active_count }}</div>
+        </div>
+        <div class="p-4 bg-slate-800/80 border border-slate-700/60 rounded-xl">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Revoked Keys</span>
+            <div class="text-2xl font-bold text-rose-400 mt-1">{{ revoked_count }}</div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl overflow-hidden shadow">
+        <table class="min-w-full divide-y divide-slate-700/60 text-left text-sm">
+            <thead class="bg-slate-900/60 text-slate-400 uppercase text-xs">
+                <tr>
+                    <th class="px-6 py-3 font-semibold">Key Label</th>
+                    <th class="px-6 py-3 font-semibold">Prefix</th>
+                    <th class="px-6 py-3 font-semibold">Created</th>
+                    <th class="px-6 py-3 font-semibold">Last Used</th>
+                    <th class="px-6 py-3 font-semibold">Status</th>
+                    <th class="px-6 py-3 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="keys-table-body" class="divide-y divide-slate-700/40 text-slate-200">
+                {% for key in keys %}
+                    {% include "partials/key_row.html" %}
+                {% else %}
+                <tr id="empty-keys-row">
+                    <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+                        No API keys generated yet. Click "+ Create New API Key" above.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Key Creation Modal Form -->
+<div id="create-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white">Issue New API Key</h3>
+            <button onclick="document.getElementById('create-modal').classList.add('hidden')" class="text-slate-400 hover:text-white">&times;</button>
+        </div>
+        <form hx-post="/admin/keys" hx-target="#modal-container" hx-swap="innerHTML"
+              onsubmit="document.getElementById('create-modal').classList.add('hidden')" class="space-y-4">
+            <div>
+                <label for="name" class="block text-sm font-medium text-slate-300">Key Name / Label</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Support Pipeline Router" required
+                       class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="document.getElementById('create-modal').classList.add('hidden')"
+                        class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm text-slate-200">Cancel</button>
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-medium text-white shadow">Generate Key</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
