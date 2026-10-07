@@ -50,6 +50,7 @@ def test_environment_variable_override(monkeypatch):
     assert settings.device == "cuda"
     assert settings.port == 9000
     assert settings.workers == 2
+    get_settings.cache_clear()
 
 
 @pytest.mark.parametrize(

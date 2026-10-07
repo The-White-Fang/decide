@@ -18,19 +18,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Bake model weights into image layer
-COPY scripts/bake_model.py ./scripts/
-RUN HF_HUB_OFFLINE=0 python scripts/bake_model.py
-
 # Copy application source code and entrypoint
 COPY decide ./decide
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
+# Bake model weights into image layer
+COPY scripts/bake_model.py ./scripts/
+RUN HF_HUB_OFFLINE=0 python scripts/bake_model.py
+
 VOLUME ["/data"]
 EXPOSE 8000
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
 ENTRYPOINT ["./entrypoint.sh"]

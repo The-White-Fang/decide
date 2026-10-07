@@ -68,9 +68,9 @@ async def lifespan(app: FastAPI):
         classifier.predict("warmup test sentence", {"intent": ["support", "general"]})
         load_time = time.perf_counter() - start_time
         engine_state.set_ready(classifier, device_name, load_time_seconds=round(load_time, 3))
-    except Exception:
-        # Allow service to start, but /health will report model_loaded=False
-        pass
+    except Exception as e:
+        import logging
+        logging.getLogger("decide.engine.lifecycle").error("Failed to load model on startup: %s", e, exc_info=True)
 
 
     yield

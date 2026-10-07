@@ -18,6 +18,7 @@ python-multipart>=0.0.9
 # Machine Learning & Inference Engine
 torch>=2.0.0
 gliner2>=2.0.0
+peft>=0.7.0
 transformers>=4.38.0
 
 # Testing

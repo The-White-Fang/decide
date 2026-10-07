@@ -35,7 +35,9 @@ def bake() -> bool:
 
 
 if __name__ == "__main__":
-    bake()
+    success = bake()
+    if not success:
+        sys.exit(1)
     sys.exit(0)
 
 
