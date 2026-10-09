@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from decide.api.middleware import setup_middleware
 from decide.api.routes.health import router as health_router
@@ -38,6 +39,19 @@ def create_app() -> FastAPI:
     app.include_router(web_auth_router)
     app.include_router(web_dashboard_router)
     app.include_router(web_playground_router)
+
+    # Convenience root & legacy route redirects
+    @app.get("/", include_in_schema=False)
+    def root_redirect():
+        return RedirectResponse(url="/admin", status_code=303)
+
+    @app.get("/login", include_in_schema=False)
+    def login_redirect():
+        return RedirectResponse(url="/admin/login", status_code=303)
+
+    @app.get("/dashboard", include_in_schema=False)
+    def dashboard_redirect():
+        return RedirectResponse(url="/admin", status_code=303)
 
     return app
 
