@@ -55,6 +55,7 @@ from decide.db.models import APIKey
 
 class PredictResponse(BaseModel):
     result: dict[str, str]
+    confidence: dict[str, dict[str, float]]
 
 router = APIRouter()
 

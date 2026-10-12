@@ -229,6 +229,19 @@ CREATE INDEX idx_api_keys_is_active ON api_keys(is_active);
 	"result": {
 		"intent": "replacement",
 		"urgency": "critical"
+	},
+	"confidence": {
+		"intent": {
+			"refund": 0.0002,
+			"replacement": 0.9995,
+			"tracking": 0.0002,
+			"general_inquiry": 0.0001
+		},
+		"urgency": {
+			"low": 0.0618,
+			"normal": 0.0713,
+			"critical": 0.8669
+		}
 	}
 }
 ```

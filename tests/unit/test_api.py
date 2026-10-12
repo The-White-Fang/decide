@@ -134,6 +134,9 @@ def test_predict_route_unit_success(monkeypatch):
 
     assert isinstance(res, PredictResponse)
     assert res.result == {"intent": "support"}
+    assert "intent" in res.confidence
+    assert res.confidence["intent"]["support"] == 1.0
+    assert res.confidence["intent"]["billing"] == 0.0
     mock_classifier.predict.assert_called_once_with(
         "Help with refund",
         {"intent": ["support", "billing"]},

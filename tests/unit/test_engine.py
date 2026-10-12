@@ -89,16 +89,24 @@ def test_load_gliner_model_failure(monkeypatch):
 
 def test_classification_result_dataclass_and_dict_compatibility():
     """Verify ClassificationResult acts both as a dataclass and dict subscriptable container."""
-    cr = ClassificationResult(result={"intent": "refund"}, latency_ms=12.34)
+    cr = ClassificationResult(
+        result={"intent": "refund"},
+        latency_ms=12.34,
+        confidence={"intent": {"refund": 0.95, "other": 0.05}},
+    )
     assert cr.result == {"intent": "refund"}
     assert cr.latency_ms == 12.34
+    assert cr.confidence == {"intent": {"refund": 0.95, "other": 0.05}}
     assert cr["result"] == {"intent": "refund"}
     assert cr["latency_ms"] == 12.34
+    assert cr["confidence"] == {"intent": {"refund": 0.95, "other": 0.05}}
     assert "result" in cr
     assert "latency_ms" in cr
+    assert "confidence" in cr
     assert "other" not in cr
     assert cr.get("result") == {"intent": "refund"}
     assert cr.get("latency_ms") == 12.34
+    assert cr.get("confidence") == {"intent": {"refund": 0.95, "other": 0.05}}
     assert cr.get("missing", 42) == 42
 
     with pytest.raises(KeyError):
@@ -106,7 +114,7 @@ def test_classification_result_dataclass_and_dict_compatibility():
 
 
 def test_multitask_classifier_prediction_mapping():
-    """Verify MultiTaskClassifier maps extractor outputs to dictionary and records latency."""
+    """Verify MultiTaskClassifier maps extractor outputs to dictionary and records latency and confidence."""
     class MockExtractor:
         def extract(self, text, tasks):
             return {
@@ -115,12 +123,13 @@ def test_multitask_classifier_prediction_mapping():
             }
 
     classifier = MultiTaskClassifier(extractor=MockExtractor(), device=torch.device("cpu"))
+    tasks_input = {
+        "intent": ["refund", "replacement", "tracking", "general_inquiry"],
+        "urgency": ["low", "normal", "critical"],
+    }
     res = classifier.predict(
         text="My order arrived broken and I want a replacement immediately.",
-        tasks={
-            "intent": ["refund", "replacement", "tracking", "general_inquiry"],
-            "urgency": ["low", "normal", "critical"],
-        },
+        tasks=tasks_input,
     )
 
     assert isinstance(res, ClassificationResult)
@@ -128,6 +137,15 @@ def test_multitask_classifier_prediction_mapping():
     assert res.result["urgency"] == "critical"
     assert res["result"]["intent"] == "replacement"
     assert res.latency_ms >= 0.0
+
+    # Verify confidence is populated for all candidates
+    assert "intent" in res.confidence
+    assert "urgency" in res.confidence
+    assert set(res.confidence["intent"].keys()) == set(tasks_input["intent"])
+    assert set(res.confidence["urgency"].keys()) == set(tasks_input["urgency"])
+    assert res.confidence["intent"]["replacement"] == 1.0
+    assert res.confidence["intent"]["refund"] == 0.0
+    assert res.confidence["urgency"]["critical"] == 1.0
 
 
 def test_multitask_classifier_complex_outputs():

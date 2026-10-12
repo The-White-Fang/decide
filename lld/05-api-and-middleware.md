@@ -55,6 +55,7 @@ class PredictRequest(BaseModel):
 ```python
 class PredictResponse(BaseModel):
     result: Dict[str, str]
+    confidence: Dict[str, Dict[str, float]]
 ```
 
 ---

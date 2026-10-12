@@ -13,6 +13,7 @@ router = APIRouter()
 
 class PredictResponse(BaseModel):
     result: Dict[str, str]
+    confidence: Dict[str, Dict[str, float]]
 
 
 @router.post("/predict", response_model=PredictResponse)
@@ -34,7 +35,18 @@ def predict_intent(
 
     try:
         prediction_output = state.classifier.predict(payload.text, payload.tasks)
-        return PredictResponse(result=prediction_output["result"])
+        confidence = prediction_output.get("confidence")
+        if not confidence and payload.tasks:
+            result_map = prediction_output.get("result", {})
+            confidence = {}
+            for t_name, candidates in payload.tasks.items():
+                pred = result_map.get(t_name)
+                confidence[t_name] = {c: (1.0 if c == pred else 0.0) for c in candidates}
+
+        return PredictResponse(
+            result=prediction_output["result"],
+            confidence=confidence,
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

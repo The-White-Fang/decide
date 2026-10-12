@@ -114,6 +114,14 @@ def test_predict_success_and_result_schema(setup_integration_env):
     assert "result" in data
     assert data["result"]["intent"] == "replacement"
     assert data["result"]["urgency"] == "critical"
+    assert "confidence" in data
+    assert isinstance(data["confidence"], dict)
+    assert "intent" in data["confidence"]
+    assert "urgency" in data["confidence"]
+    assert set(data["confidence"]["intent"].keys()) == set(payload["tasks"]["intent"])
+    assert set(data["confidence"]["urgency"].keys()) == set(payload["tasks"]["urgency"])
+    assert data["confidence"]["intent"]["replacement"] == 1.0
+    assert data["confidence"]["urgency"]["critical"] == 1.0
     assert "X-Response-Time" in resp.headers
 
 
